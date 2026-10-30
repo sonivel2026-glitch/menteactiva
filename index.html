@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mente Activa</title>
+<style>
+:root{--bg:#f2fbfb;--card:#fff;--tx:#12384a;--tq:#0e9aa7;--tqd:#0a7b86;--bl:#dbeafe;--ye:#fde047;--ok:#bbf7d0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b2a33;--card:#12404d;--tx:#f1fafa;--tq:#2dd4bf;--tqd:#5eead4;--bl:#1e3a5f;--ye:#facc15;--ok:#14532d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b2a33;--card:#12404d;--tx:#f1fafa;--tq:#2dd4bf;--tqd:#5eead4;--bl:#1e3a5f;--ye:#facc15;--ok:#14532d;color-scheme:dark}
+html,body{height:auto;margin:0}
+body{background:var(--bg);color:var(--tx);font:22px/1.5 "Segoe UI",Verdana,Arial,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--tq);color:#fff;padding:12px 18px;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:1.5rem}
+main{max-width:900px;margin:0 auto;padding:16px}
+h2{font-size:1.4rem;margin:18px 0 8px}
+.b{font:inherit;font-weight:700;min-height:64px;padding:10px 22px;margin:5px;border-radius:18px;border:3px solid var(--tq);background:var(--card);color:var(--tx);cursor:pointer}
+.b:hover,.b:focus-visible{outline:4px solid var(--ye)}
+.b.on{background:var(--tq);color:#fff}.b:disabled{opacity:.4}
+header .b{min-height:48px;font-size:1rem;border-color:#fff}
+.row{display:flex;flex-wrap:wrap}
+input{font:inherit;width:100%;box-sizing:border-box;padding:14px;border-radius:14px;border:3px solid var(--tq);margin:6px 0;background:var(--card);color:var(--tx)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.card{font:inherit;font-weight:800;background:var(--card);color:var(--tx);border:3px solid var(--bl);border-bottom:8px solid var(--ye);border-radius:22px;padding:16px;min-height:150px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.card:hover,.card:focus-visible{outline:4px solid var(--tq)}
+.card span{font-size:3rem}.card small{font-weight:400;color:var(--tqd);font-size:1rem}
+.ins{background:var(--bl);padding:14px 18px;border-radius:16px;border-left:10px solid var(--ye)}
+.turn{font-size:1.2rem}
+.q{font-size:1.5rem;font-weight:700;text-align:center;margin:14px 0;padding:10px;background:var(--card);border-radius:16px}
+.big{font-size:3rem;font-weight:800}
+.prog{text-align:center;color:var(--tqd);font-weight:700}
+.opts{display:flex;flex-wrap:wrap;justify-content:center}
+.opts .b{min-width:130px;font-size:1.6rem}
+#f{min-height:2em;text-align:center;font-weight:800;font-size:1.4rem;color:var(--tqd)}
+.pg{display:grid;gap:10px;margin:10px 0}
+.pc{font:inherit;font-size:2.2rem;min-height:76px;border-radius:16px;border:3px solid var(--tq);background:var(--card);color:var(--tx);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pc.up{background:var(--bl)}.pc.ok{background:var(--ok);border-color:#16a34a}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:460px;margin:12px auto}
+.sb{font:inherit;font-weight:800;color:#12384a;min-height:110px;border-radius:22px;border:4px solid #fff;opacity:.5;cursor:pointer;font-size:1.3rem}
+.sb.lit{opacity:1;outline:6px solid var(--ye);transform:scale(1.05)}
+.words{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:14px 0}
+.words span{background:var(--ye);color:#12384a;font-weight:800;padding:12px 22px;border-radius:16px;font-size:1.8rem}
+.end{text-align:center;background:var(--card);border-radius:24px;padding:20px;border:4px solid var(--ye)}
+.end .s{font-size:3.5rem}
+.lc{font-size:1.3rem;min-height:0;aspect-ratio:1;padding:0;font-weight:700}
+s{opacity:.6}
+table{width:100%;border-collapse:collapse}td{padding:12px;border-bottom:2px solid var(--bl)}
+</style></head><body>
+<header><h1>🌞 Mente Activa</h1><span><button class="b" onclick="home()">🏠 Inicio</button><button class="b" id="vz" onclick="tv()">🔈 Voz: no</button></span></header>
+<main id="app"></main>
+<script>
+const $=s=>document.querySelector(s),sh=a=>[...a].sort(()=>Math.random()-.5),R=a=>a[Math.random()*a.length|0],w=ms=>new Promise(r=>setTimeout(r,ms)),app=$('#app');
+const LV=['Inicial','Medio','Avanzado'],OK=['¡Muy bien!','¡Excelente!','¡Así se hace!','¡Qué buena memoria!','¡Vos podés!','¡Perfecto!'];
+let S={l:0,voz:false,pl:[],t:0,co:0,det:''},P={};
+try{P=JSON.parse(localStorage.getItem('mm')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('mm',JSON.stringify(P))}catch(e){}};
+function say(t){try{if(!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,''));u.lang='es-AR';u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
+function tv(){S.voz=!S.voz;$('#vz').textContent='🔈 Voz: '+(S.voz?'sí':'no');if(S.voz)say('Voz activada. Yo te leo las instrucciones.');else try{speechSynthesis.cancel()}catch(e){}}
+function msg(t){const f=$('#f');if(f)f.textContent=t;if(S.voz)say(t)}
+const opt=(l,c,n)=>sh([c,...sh(l.filter(x=>x!=c)).slice(0,n-1)]);
+function quiz(a,qs,end,retry=1){let i=0,er=0;const n=qs.length,nx=()=>{i++;i<n?setTimeout(s,1000):setTimeout(()=>end(n/(n+er)),1000)};
+function s(){const q=qs[i];a.innerHTML=`<div class="prog">Pregunta ${i+1} de ${n}</div><div class="q">${q.q}</div><div class="opts">${q.o.map(o=>`<button class="b" data-v="${o}">${o}</button>`).join('')}</div>`;
+a.querySelectorAll('.opts .b').forEach(b=>b.onclick=()=>{if(b.dataset.v==q.c){msg(R(OK));a.querySelectorAll('.opts .b').forEach(x=>x.disabled=1);nx()}else{er++;if(retry){b.disabled=1;msg('Casi… ¡probá con otra!')}else{msg('La respuesta es: '+q.c+'. ¡Seguimos!');a.querySelectorAll('.opts .b').forEach(x=>x.disabled=1);i++;i<n?setTimeout(s,2200):setTimeout(()=>end(n/(n+er)),2200)}}})}
+s()}
+const G={
+parejas:{n:'Parejas',i:'🃏',t:'Juego · memoria',d:'Tocá las tarjetas para darlas vuelta. Encontrá las dos imágenes iguales. Si no coinciden, se tapan de nuevo y probás otra vez. No hay apuro.',
+run(a,l,end){const n=[3,6,8][l],c=sh(['🍎','🐶','🌻','🚗','🎈','🐟','🍋','🏠']).slice(0,n),cs=sh([...c,...c]);let op=[],m=0,mv=0,lock=0;
+a.innerHTML=`<div class="pg" style="grid-template-columns:repeat(${n==3?3:4},1fr)">${cs.map((e,i)=>`<button class="pc" data-i="${i}">❓</button>`).join('')}</div>`;
+const B=a.querySelectorAll('.pc');B.forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(lock||op.includes(i)||b.classList.contains('ok'))return;b.textContent=cs[i];b.classList.add('up');op.push(i);
+if(op.length==2){mv++;const[x,y]=op;if(cs[x]==cs[y]){B[x].classList.add('ok');B[y].classList.add('ok');op=[];m++;msg('¡Pareja encontrada!');if(m==n)setTimeout(()=>end(Math.min(1,n*2/mv)),900)}
+else{lock=1;msg('Casi… ¡probá otra vez!');setTimeout(()=>{[x,y].forEach(j=>{B[j].textContent='❓';B[j].classList.remove('up')});op=[];lock=0},1200)}}})}},
+secuencia:{n:'Secuencia de colores',i:'🎨',t:'Juego · memoria',d:'Mirá con atención cómo se iluminan los colores. Después tocá los mismos colores en el mismo orden. Si te equivocás, la secuencia se muestra otra vez.',
+run(a,l,end){const C=[['#ef4444','Rojo'],['#3b82f6','Azul'],['#eab308','Amarillo'],['#22c55e','Verde']];let r=0,er=0,seq,pos,lock=1;
+a.innerHTML=`<p id="st" class="prog"></p><div class="sg">${C.map(c=>`<button class="sb" style="background:${c[0]}">${c[1]}</button>`).join('')}</div>`;const B=[...a.querySelectorAll('.sb')];
+const play=async()=>{lock=1;pos=0;$('#st').textContent='Mirá con atención…';await w(800);for(const x of seq){B[x].classList.add('lit');await w(700);B[x].classList.remove('lit');await w(300)}$('#st').textContent='¡Ahora te toca a vos!';lock=0};
+const nr=()=>{seq=Array.from({length:2+l+r},()=>Math.random()*4|0);play()};
+B.forEach((b,i)=>b.onclick=()=>{if(lock)return;if(i==seq[pos]){pos++;if(pos==seq.length){r++;lock=1;msg(R(OK));r==3?setTimeout(()=>end(3/(3+er)),1000):setTimeout(nr,1300)}}else{er++;lock=1;msg('¡Casi! Miremos otra vez.');setTimeout(play,1400)}});nr()}},
+colores:{n:'¿De qué color?',i:'🌈',t:'Atención · concentración',d:'Va a aparecer el nombre de un color escrito con tinta de algún color. Tocá el color con que está PINTADA la palabra, no lo que dice.',
+run(a,l,end){const C=[['ROJO','#dc2626','Rojo'],['AZUL','#2563eb','Azul'],['VERDE','#16a34a','Verde'],['AMARILLO','#d99a00','Amarillo']],names=C.map(c=>c[2]);
+quiz(a,Array.from({length:[5,8,10][l]},()=>{const p=R(C);let c=p;if(l==2||(l==1&&Math.random()<.5))c=R(C.filter(x=>x!=p));return{q:`<span class="big" style="color:${c[1]};background:#fff;padding:2px 18px;border-radius:12px">${p[0]}</span>`,o:names,c:c[2]}}),end)}},
+buscar:{n:'Buscar y tocar',i:'🔍',t:'Atención · imágenes',d:'Arriba te muestro una imagen. Buscala entre todas las demás y tocá cada una que encuentres. Las que acertás se pintan de verde.',
+run(a,l,end){const P1=['🌸','🌼','🌻','🍀','🌷','🍎','🍐','🍊','⭐','🌙','☀️','🐟'],P2=['🌸','🌺','🌷','🌹','🌼','🌻'],P=l==2?P2:P1,t=R(P),n=[12,20,30][l],k=[3,4,6][l],o=P.filter(x=>x!=t),cs=sh([...Array(k).fill(t),...Array.from({length:n-k},()=>R(o))]);let f=0,er=0;
+a.innerHTML=`<p class="q">Buscá: <span class="big">${t}</span> · hay ${k}</p><div class="pg" style="grid-template-columns:repeat(${[4,5,6][l]},1fr)">${cs.map(e=>`<button class="pc">${e}</button>`).join('')}</div>`;
+a.querySelectorAll('.pc').forEach(b=>b.onclick=()=>{if(b.classList.contains('ok'))return;if(b.textContent==t){b.classList.add('ok');f++;msg(f==k?'¡Las encontraste todas!':'¡Muy bien! Quedan '+(k-f));if(f==k)setTimeout(()=>end(k/(k+er)),1000)}else{er++;msg('Esa no… ¡seguí mirando!')}})}},
+intruso:{n:'¿Cuál no pertenece?',i:'🧩',t:'Razonamiento · categorías',d:'Vas a ver varias imágenes. Casi todas son del mismo grupo, pero una es distinta. Tocá la que no pertenece al grupo.',
+run(a,l,end){const C=[['🍎','🍌','🍇','🍐','🍓','🍊'],['🐶','🐱','🐴','🐮','🐑','🐔'],['🚗','🚌','🚲','✈️','🚂','⛵'],['👕','👖','🧦','🧤','👒','👗'],['🎸','🎹','🥁','🎺','🎻','🪗']],k=[3,4,5][l];
+quiz(a,Array.from({length:5},()=>{const[x,y]=sh(C),c=R(y);return{q:'¿Cuál NO pertenece al grupo?',o:sh([c,...sh(x).slice(0,k-1)]),c}}),end)}},
+palabras:{n:'Recordar palabras',i:'📝',t:'Test · memoria',d:'Leé las palabras con calma y memorizalas. Cuando estés listo/a, tocá el botón y elegí las que viste entre otras nuevas.',
+run(a,l,end){const W=['MESA','PERRO','SOL','LIBRO','FLOR','PAN','CASA','RELOJ','LUNA','TAZA','ÁRBOL','LLAVE','MAR','GATO','SILLA','PUENTE'],n=[3,5,7][l],ws=sh(W).slice(0,n);
+a.innerHTML=`<p class="q">Memorizá estas palabras:</p><div class="words">${ws.map(x=>`<span>${x}</span>`).join('')}</div><div class="opts"><button class="b" id="go">Ya las memoricé ✔</button></div>`;
+$('#go').onclick=()=>{const o=sh([...ws,...sh(W.filter(x=>!ws.includes(x))).slice(0,n)]),s=new Set();
+a.innerHTML=`<p class="q">Tocá las palabras que viste:</p><div class="opts">${o.map(x=>`<button class="b">${x}</button>`).join('')}</div><div class="opts"><button class="b on" id="ok">Listo ✔</button></div>`;
+a.querySelectorAll('.opts .b').forEach(b=>{if(b.id)return;b.onclick=()=>{b.classList.toggle('on');s.has(b.textContent)?s.delete(b.textContent):s.add(b.textContent)}});
+$('#ok').onclick=()=>{const g=[...s].filter(x=>ws.includes(x)).length;S.det=`Recordaste ${g} de ${n} palabras.`;end(Math.max(0,g-(s.size-g))/n)}}}},
+calculo:{n:'Cálculo mental',i:'➕',t:'Juego · números',d:'Resolvé cada cuenta con calma y tocá el resultado correcto. Podés usar los dedos o papel si querés. ¡No hay prisa!',
+run(a,l,end){const r=(x,y)=>x+(Math.random()*(y-x+1)|0);
+quiz(a,Array.from({length:5},()=>{let t,c;if(l==0){const x=r(1,9),y=r(1,10);t=`${x} + ${y}`;c=x+y}else if(l==1){const x=r(12,40),y=r(5,12);if(Math.random()<.5){t=`${x} + ${y}`;c=x+y}else{t=`${x+y} − ${y}`;c=x}}else{const x=r(2,9),y=r(3,9);if(Math.random()<.5){t=`${x} × ${y}`;c=x*y}else{const p=r(25,60),q=r(15,35);t=`${p} + ${q}`;c=p+q}}
+const d=sh([c+1,c-1,c+2,c-2,c+10,c-10].filter(v=>v>=0)).slice(0,3).map(String);return{q:`<span class="big">${t} = ?</span>`,o:sh([String(c),...d]),c:String(c)}}),end)}},
+orden:{n:'Seguir el orden',i:'🔢',t:'Atención · funciones ejecutivas',d:'Hay números mezclados en la pantalla. Tocalos en orden. En el nivel avanzado, empezá por el más grande y bajá hasta el 1.',
+run(a,l,end){const N=[6,9,12][l],d=l==2,ns=sh(Array.from({length:N},(_,i)=>i+1));let nx=d?N:1,er=0;
+a.innerHTML=`<p class="q">${d?'De mayor a menor: empezá por el '+N:'De menor a mayor: empezá por el 1'}</p><div class="pg" style="grid-template-columns:repeat(${l==2?4:3},1fr)">${ns.map(n=>`<button class="pc">${n}</button>`).join('')}</div>`;
+a.querySelectorAll('.pc').forEach(b=>b.onclick=()=>{if(+b.textContent==nx){b.classList.add('ok');b.disabled=1;nx+=d?-1:1;if(nx<1||nx>N){msg('¡Completaste toda la serie!');setTimeout(()=>end(N/(N+er)),1000)}else msg(R(OK))}else{er++;msg('Casi… buscá el '+nx)}})}},
+escena:{n:'Observar y recordar',i:'🖼️',t:'Imágenes · memoria visual',d:'Mirá las imágenes con calma. Cuando estés listo/a, tocá el botón. Después te voy a mostrar opciones: elegí la que estaba entre las que viste.',
+run(a,l,end){const E=['🍎','🐶','🌻','🚗','🎈','🐟','🍋','🏠','⛵','🎸','👒','🍰','🐢','🌙','🚲','☂️','🔑','📚','🍇','🦋'],s=sh(E).slice(0,[4,6,8][l]);
+a.innerHTML=`<p class="q">Mirá estas imágenes:</p><div class="pg" style="grid-template-columns:repeat(4,1fr)">${s.map(e=>`<div class="pc">${e}</div>`).join('')}</div><div class="opts"><button class="b" id="go">Ya las miré ✔</button></div>`;
+$('#go').onclick=()=>{const rest=E.filter(x=>!s.includes(x));quiz(a,[0,1,2].map(i=>({q:'¿Cuál de estas imágenes estaba?',o:sh([s[i],...sh(rest).slice(0,3)]),c:s[i]})),end)}}},
+orient:{n:'Chequeo del día',i:'📅',t:'Test · orientación',d:'Unas preguntas simples sobre hoy: el día, el mes y la estación. No es un examen: es para charlar y ubicarnos en el tiempo.',
+run(a,l,end){const d=new Date(),D=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'],M=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],E=['verano','otoño','invierno','primavera'],m=d.getMonth(),e=E[[0,0,1,1,1,2,2,2,3,3,3,0][m]],y=d.getFullYear();
+quiz(a,[{q:'¿Qué día de la semana es hoy?',o:opt(D,D[d.getDay()],4),c:D[d.getDay()]},{q:'¿En qué mes estamos?',o:opt(M,M[m],4),c:M[m]},{q:'¿En qué estación del año estamos?',o:E,c:e},{q:'¿En qué año estamos?',o:[y-2,y-1,y,y+1].map(String),c:String(y)}],end,0)}},
+sopa:{n:'Sopa de letras',i:'🔠',t:'Juego · lenguaje y atención',d:'Buscá las palabras escondidas. Tocá la primera letra de una palabra y después la última. En el nivel inicial están de izquierda a derecha; en el medio también hacia abajo; en el avanzado también en diagonal y al revés.',
+run(a,l,end){const Z=[6,8,9][l],n=[3,4,5][l],D=[[[0,1]],[[0,1],[1,0]],[[0,1],[1,0],[1,1],[0,-1],[-1,0]]][l],W=['SOL','MAR','PAN','LUNA','CASA','FLOR','MESA','GATO','PERRO','LIBRO','SILLA','TAZA','LLAVE','RELOJ','NUBE','ROSA','PATO','CAMPO','PLAYA'],
+ws=sh(W.filter(x=>x.length<=[4,5,6][l]&&x.length>=[3,4,4][l])).slice(0,n);let g=Array(Z*Z).fill(''),pl=[];
+ws.forEach(x=>{for(let t=0;t<300;t++){const[dr,dc]=R(D),r=Math.random()*Z|0,c=Math.random()*Z|0,r9=r+dr*(x.length-1),c9=c+dc*(x.length-1);if(r9<0||r9>=Z||c9<0||c9>=Z)continue;const ix=[...x].map((_,i)=>(r+dr*i)*Z+c+dc*i);if(ix.every((j,i)=>!g[j]||g[j]==x[i])){ix.forEach((j,i)=>g[j]=x[i]);pl.push(x);break}}});
+g=g.map(x=>x||R('ABCDEFGHILMNOPRSTUV'));
+a.innerHTML=`<p class="q" id="wl"></p><div class="pg" style="grid-template-columns:repeat(${Z},1fr);gap:4px">${g.map(x=>`<button class="pc lc">${x}</button>`).join('')}</div>`;
+const B=a.querySelectorAll('.lc'),fd=new Set();let sel=null,er=0;const wl=()=>$('#wl').innerHTML=pl.map(x=>fd.has(x)?`<s>${x} ✔</s>`:x).join(' · ');wl();
+B.forEach((b,i)=>b.onclick=()=>{if(sel==null){sel=i;b.classList.add('up');return}const s=sel;sel=null;B.forEach(x=>x.classList.remove('up'));if(s==i)return;
+const r1=s/Z|0,c1=s%Z,dr=(i/Z|0)-r1,dc=i%Z-c1;if(dr&&dc&&Math.abs(dr)!=Math.abs(dc)){msg('Tiene que ser en línea recta. ¡Probá de nuevo!');return}
+const m=Math.max(Math.abs(dr),Math.abs(dc))+1,ix=Array.from({length:m},(_,k)=>(r1+Math.sign(dr)*k)*Z+c1+Math.sign(dc)*k),t=ix.map(j=>g[j]).join(''),f=pl.find(x=>!fd.has(x)&&(x==t||[...x].reverse().join('')==t));
+if(f){fd.add(f);ix.forEach(j=>B[j].classList.add('ok'));wl();msg('¡Encontraste '+f+'!');if(fd.size==pl.length)setTimeout(()=>end(pl.length/(pl.length+er)),1000)}else{er++;msg('Esa no es… ¡seguí buscando!')}})}},
+difs:{n:'Encontrar diferencias',i:'👀',t:'Imágenes · atención',d:'Hay dos imágenes casi iguales. Mirá la de arriba y tocá, en la de abajo, lo que sea distinto. En los niveles más altos hay más diferencias y son más parecidas.',
+run(a,l,end){const N=[6,9,12][l],k=[2,3,4][l],E=['🍎','🐶','🌻','🚗','🎈','🐟','🍋','🏠','⛵','🎸','👒','🍰','🐢','🌙','🚲','☂️','🔑','📚','🍇','🦋'],
+SP=[['🍎','🍏'],['🌹','🌷'],['🐶','🐕'],['🚗','🚙'],['🌞','🌝'],['🐱','🐈'],['🍊','🍋'],['⭐','🌟'],['🐟','🐠'],['🌻','🌼'],['🔴','🟠'],['🐢','🐊']],sp=sh(SP).slice(0,N),
+A=l==2?sp.map(p=>p[0]):sh(E).slice(0,N),ds=new Set(sh([...A.keys()]).slice(0,k)),B2=A.map((e,i)=>ds.has(i)?(l==2?sp[i][1]:R(E.filter(x=>!A.includes(x)))):e),
+gr=(arr,id,tg)=>`<div class="pg" id="${id}" style="grid-template-columns:repeat(${l==2?4:3},1fr)">${arr.map(e=>`<${tg} class="pc">${e}</${tg}>`).join('')}</div>`;
+a.innerHTML=`<p class="prog" id="ct"></p><p class="prog">Imagen de referencia</p>${gr(A,'ga','div')}<p class="prog">Tocá acá las diferencias</p>${gr(B2,'gb','button')}`;
+let f=0,er=0;const ct=()=>$('#ct').textContent=`Encontradas: ${f} de ${k}`;ct();
+a.querySelectorAll('#gb .pc').forEach((b,i)=>b.onclick=()=>{if(b.classList.contains('ok'))return;if(ds.has(i)){b.classList.add('ok');f++;ct();msg(f==k?'¡Las encontraste todas!':R(OK));if(f==k)setTimeout(()=>end(k/(k+er)),1000)}else{er++;msg('Esa es igual… ¡seguí mirando!')}})}},
+seq:{n:'Secuencias de palabras',i:'🔗',t:'Lenguaje · memoria',d:'Las palabras siguen un orden, como los días de la semana. Nivel inicial: elegí la palabra que sigue. Nivel medio: la que falta en el medio. Nivel avanzado: ordená las palabras de principio a fin.',
+run(a,l,end){const S=[['lunes','martes','miércoles','jueves','viernes','sábado','domingo'],['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],['primavera','verano','otoño','invierno'],['uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez'],['bebé','niño','joven','adulto','abuelo'],['rojo','naranja','amarillo','verde','azul','violeta'],['mañana','mediodía','tarde','noche'],['semilla','brote','tallo','flor','fruto']],all=S.flat(),
+pick=m=>{const s=R(S.filter(x=>x.length>=m)),i=Math.random()*(s.length-m+1)|0;return s.slice(i,i+m)},o4=(c,s)=>sh([c,...sh(all.filter(x=>!s.includes(x))).slice(0,3)]);
+if(l<2)return quiz(a,Array.from({length:5},()=>{const s=pick(l?5:4);return l?{q:`${s[0]} → ${s[1]} → ❓ → ${s[3]} → ${s[4]}`,o:o4(s[2],s),c:s[2]}:{q:`${s.slice(0,3).join(' → ')} → ❓`,o:o4(s[3],s),c:s[3]}}),end);
+let r=0,er=0;const nr=()=>{const s=pick(5),sf=sh(s);let k=0;
+a.innerHTML=`<p class="prog">Ronda ${r+1} de 3</p><p class="q">Tocá las palabras en orden, de principio a fin:</p><p class="q" id="an">·</p><div class="opts">${sf.map(x=>`<button class="b">${x}</button>`).join('')}</div>`;
+a.querySelectorAll('.opts .b').forEach(b=>b.onclick=()=>{if(b.textContent==s[k]){b.disabled=1;k++;$('#an').textContent=s.slice(0,k).join(' → ');msg(R(OK));if(k==5){r++;r==3?setTimeout(()=>end(3/(3+er)),1000):setTimeout(nr,1400)}}else{er++;msg('Casi… ¡probá con otra!')}})};nr()}},
+charla:{n:'Charlemos',i:'💬',t:'En compañía · recuerdos',d:'Para conversar en familia o con amigos. Leé la pregunta en voz alta y cuenten sus recuerdos. Contar historias también ejercita la memoria.',
+run(a){const Q=['¿Cuál fue tu primer trabajo o tu primera actividad?','Contá un cumpleaños que recuerdes con cariño.','¿Cuál era tu comida favorita de la infancia?','¿Qué canción te hace acordar a tu juventud?','¿Cómo era la casa donde creciste?','¿A qué jugabas de chico/a?','Nombrá cinco animales que empiecen con la letra C.','Nombrá todas las frutas que puedas en un minuto.','¿Cuál fue el mejor viaje de tu vida?','Contá una receta que sepas de memoria.','¿Quién fue tu mejor amigo/a de la escuela?','Nombrá cosas de color amarillo que haya en una casa.'];
+const nx=()=>{a.innerHTML=`<div class="q big" style="font-size:1.9rem">${R(Q)}</div><div class="opts"><button class="b on" id="nx">Otra pregunta ➡</button><button class="b" id="ls">🔊 Leer en voz alta</button></div>`;$('#nx').onclick=nx;$('#ls').onclick=()=>say($('.q').textContent)};nx()}}
+};
+function home(){try{speechSynthesis.cancel()}catch(e){}
+app.innerHTML=`<h2>¿Cómo querés jugar hoy?</h2><div class="row"><button class="b ${S.co?'':'on'}" onclick="S.co=0;home()">🙂 Solo/a</button><button class="b ${S.co?'on':''}" onclick="S.co=1;home()">👥 En compañía</button></div>
+${S.co?`<input id="nm" aria-label="Nombres" placeholder="Nombres de quienes juegan, separados por coma" value="${S.pl.join(', ')}" onchange="S.pl=this.value.split(',').map(x=>x.trim()).filter(x=>x);S.t=0">`:''}
+<h2>Elegí tu nivel</h2><div class="row">${LV.map((n,i)=>`<button class="b ${S.l==i?'on':''}" onclick="S.l=${i};home()">${'⭐'.repeat(i+1)} ${n}</button>`).join('')}</div>
+<h2>Elegí una actividad</h2><div class="grid">${Object.entries(G).map(([k,g])=>`<button class="card" onclick="play('${k}')"><span>${g.i}</span>${g.n}<small>${g.t}</small></button>`).join('')}</div>
+<h2>Tu camino</h2><button class="b" onclick="prog()">📈 Mi progreso</button>`}
+function play(k){const g=G[k];S.k=k;S.det='';
+app.innerHTML=`<button class="b" onclick="home()">⬅ Volver</button><h2>${g.i} ${g.n} · ${LV[S.l]}</h2>${S.co&&S.pl.length?`<p class="turn">Turno de <b>${S.pl[S.t%S.pl.length]}</b></p>`:''}<p class="ins">${g.d}</p><button class="b" onclick="say(G['${k}'].d)">🔊 Escuchar instrucciones</button><div id="a"></div><p id="f" aria-live="polite"></p>`;
+if(S.voz)say(g.d);g.run($('#a'),S.l,r=>fin(k,r))}
+function fin(k,r){const st=r>=.8?3:r>=.5?2:1,M=['¡Completaste la actividad! Lo importante es practicar.','¡Muy bien! Cada día un poquito mejor.','¡Excelente trabajo! Se nota tu esfuerzo.'][st-1];
+P[k]=P[k]||[0,0,0];P[k][S.l]=Math.max(P[k][S.l],st);P.n=(P.n||0)+1;save();
+const nxt=S.co&&S.pl.length?(S.t++,`<p>Ahora le toca a <b>${S.pl[S.t%S.pl.length]}</b> 🎉</p>`):'';
+$('#a').innerHTML=`<div class="end"><div class="s">${'⭐'.repeat(st)}</div><h2>${M}</h2><p>${S.det}</p>${nxt}${st==3&&S.l<2?`<p>¡Ya podés probar el nivel ${LV[S.l+1]}!</p><button class="b on" onclick="S.l++;play('${k}')">Subir de nivel ⬆</button>`:''}<button class="b on" onclick="play('${k}')">🔄 Jugar otra vez</button><button class="b" onclick="home()">🏠 Otra actividad</button></div>`;
+$('#f').textContent='';if(S.voz)say(M)}
+function prog(){app.innerHTML=`<button class="b" onclick="home()">⬅ Volver</button><h2>📈 Mi progreso</h2><p class="ins">Acá ves las estrellas que fuiste ganando. Nunca se pierden: ¡solo suman! Llevás ${P.n||0} actividades completadas.</p><table>${Object.entries(G).filter(([k])=>k!='charla').map(([k,g])=>`<tr><td>${g.i} ${g.n}</td>${[0,1,2].map(i=>`<td title="${LV[i]}">${LV[i][0]}: ${'⭐'.repeat((P[k]||[])[i]||0)||'·'}</td>`).join('')}</tr>`).join('')}</table><p>I = Inicial · M = Medio · A = Avanzado</p>`}
+home();
+</script></body></html>
